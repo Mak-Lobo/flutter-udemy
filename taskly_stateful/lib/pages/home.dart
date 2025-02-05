@@ -10,14 +10,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late double _width, _height;
-  String? _newTask;
+  late double _height;
   Box? _taskBox;
   late List tasks;
 
   @override
   Widget build(BuildContext context) {
-    _width = MediaQuery.of(context).size.width;
     _height = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -121,7 +119,6 @@ class _HomePageState extends State<HomePage> {
             ),
             onChanged: (_taskEntry) {
               setState(() {
-                _newTask = _taskEntry;
                 print('Input value: $_taskEntry');
               });
             },
@@ -134,7 +131,6 @@ class _HomePageState extends State<HomePage> {
                 );
                 _taskBox!.add(_inputTask.toMapData());
                 setState(() {
-                  _newTask = null;
                   Navigator.pop(_context);
                 });
               }
