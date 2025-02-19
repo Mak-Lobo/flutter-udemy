@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:finstagram/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -14,8 +16,15 @@ class _RegisterPageState extends State<RegisterPage> {
   double? width, height;
   String? email, password, username;
   GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
-  late File? profileImage;
+  File? profileImage;
+  FirebaseService? firebaseService;
   bool hidePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    firebaseService = GetIt.instance.get<FirebaseService>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +40,17 @@ class _RegisterPageState extends State<RegisterPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
+                const Text(
                   "Finstagram",
                   style: TextStyle(
-                    fontSize: width! * 0.1,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 profilePhoto(),
                 registrationForm(),
                 registerButton(),
+                loginLink(),
               ],
             ),
           ),
@@ -58,9 +68,15 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   // register function
-  void registerUser() {
+  void registerUser() async {
     if (registerFormKey.currentState!.validate() && profileImage != null) {
       registerFormKey.currentState!.save();
+      bool _registerResult = await firebaseService!.registerUser(
+          email: email!,
+          password: password!,
+          image: profileImage!,
+          username: username!);
+      if (_registerResult) Navigator.pop(context);
       print(
           "Valid: ${registerFormKey.currentState!.validate()}\nprofileImage: $profileImage");
     }
@@ -170,6 +186,21 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundImage: (profileImage == null)
             ? const NetworkImage("https://i.pravatar.cc/300")
             : Image.file(profileImage!).image,
+      ),
+    );
+  }
+
+  // login link
+  Widget loginLink() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/login');
+      },
+      child: const Text(
+        "Have an account? Click here to login",
+        style: TextStyle(
+          decoration: TextDecoration.underline,
+        ),
       ),
     );
   }

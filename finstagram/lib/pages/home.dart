@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:finstagram/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import 'feed.dart';
 import 'profile.dart';
@@ -12,8 +17,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   double? width, height;
+  FirebaseService? firebaseService;
   int page = 0;
   final List<Widget> pages = [const FeedPage(), const ProfilePage()];
+
+  @override
+  void initState() {
+    super.initState();
+    firebaseService = GetIt.instance.get<FirebaseService>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +43,16 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: postImage,
             child: const Icon(
               Icons.add_a_photo_rounded,
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () async {
+              await firebaseService!.signOut;
+              Navigator.popAndPushNamed(context, "/login");
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: width! * 0.025),
               child: const Icon(
@@ -72,5 +87,15 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
+  }
+
+  // posting an image
+  void postImage() async {
+    FilePickerResult? _imageResult =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+
+    File pickedImage = File(_imageResult!.files.first.path!);
+    // posting the image to firebase
+    await firebaseService!.postImageToFirebase(pickedImage);
   }
 }

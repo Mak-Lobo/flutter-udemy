@@ -1,7 +1,29 @@
+buildscript {
+    ext.kotlin_version = '2.1.0' // Change to a compatible version
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.2' // Google services
+        classpath 'com.android.tools.build:gradle:8.3.2' // updated Android gradle plugin
+    }
+}
+
+plugins {
+    id 'com.google.gms.google-services' version '4.4.2' apply false
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+
+    // Force all dependencies to use Kotlin 2.1.10
+    configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "org.jetbrains.kotlin") {
+                details.useVersion "2.1.0"
+            }
+        }
     }
 }
 

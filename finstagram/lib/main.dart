@@ -2,10 +2,15 @@ import 'package:finstagram/pages/feed.dart';
 import 'package:finstagram/pages/home.dart';
 import 'package:finstagram/pages/login.dart';
 import 'package:finstagram/pages/register.dart';
+import 'package:finstagram/services/firebase_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:get_it/get_it.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  GetIt.instance.registerSingleton<FirebaseService>(FirebaseService());
   runApp(const MainApp());
 }
 
@@ -66,7 +71,7 @@ class MainApp extends StatelessWidget {
       ),
       title: 'Material 3 App',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
