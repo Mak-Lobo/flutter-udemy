@@ -1,9 +1,11 @@
-import 'dart:math';
+import 'dart:developer' as devp;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ibmi_cupertino/custom_widgets/custom_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../calculate.dart';
 
 class BMIPage extends StatefulWidget {
   const BMIPage({super.key});
@@ -14,7 +16,7 @@ class BMIPage extends StatefulWidget {
 
 class _BMIPageState extends State<BMIPage> {
   double? width, height;
-  int age = 20, weight = 50, heightInInches = 60, gender = 0;
+  int age = 20, weight = 100, heightInInches = 60, gender = 0;
   double bmi = 0;
 
   @override
@@ -129,6 +131,7 @@ class _BMIPageState extends State<BMIPage> {
             SizedBox(
               width: 40,
               child: CupertinoDialogAction(
+                key: const Key('remove weight'),
                 onPressed: () {
                   setState(() {
                     weight--;
@@ -144,6 +147,7 @@ class _BMIPageState extends State<BMIPage> {
             SizedBox(
               width: 40,
               child: CupertinoDialogAction(
+                key: const Key('add weight'),
                 onPressed: () {
                   setState(() {
                     weight++;
@@ -164,7 +168,7 @@ class _BMIPageState extends State<BMIPage> {
   // height slider selection
   Widget heightSelection() {
     return Container(
-      height: height! * 0.15,
+      height: height! * 0.18,
       width: width! * 0.9,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -257,7 +261,7 @@ class _BMIPageState extends State<BMIPage> {
         ),
         onPressed: () {
           setState(() {
-            bmi = weight / pow(heightInInches, 2) * 703;
+            bmi = calculateBMI(weight, heightInInches);
             print(bmi);
             bmiResult();
           });
@@ -305,6 +309,26 @@ class _BMIPageState extends State<BMIPage> {
     await prefs.setString('bmi_date', DateTime.now().toString());
     await prefs.setStringList('bmi_data', [bmiValue, statusValue]);
 
-    print('BMI values saved');
+    // print('BMI values saved');
+    devp.log('\u001B[36mResults saved!\u001B[0m');
+    /*
+    \u001B[0m Reset
+    \u001B[30m Black
+    \u001B[31m Red
+    \u001B[32m Green
+    \u001B[33m Yellow
+    \u001B[34m Blue
+    \u001B[35m Magenta
+    \u001B[36m Cyan
+    \u001B[37m White
+    \u001B[40m Black Background
+    \u001B[41m Red Background
+    \u001B[42m Green Background
+    \u001B[43m Yellow Background
+    \u001B[44m Blue Background
+    \u001B[45m Magenta Background
+    \u001B[46m Cyan Background
+    \u001B[47m White Background
+    */
   }
 }
